@@ -2,24 +2,41 @@ import AddTaskForm from "./AddTaskForm";
 import SearchTaskForm from "./SearchTaskForm";
 import TodoInfo from "./TodoInfo";
 import TodoList from "./TodoList";
+import {useState} from "react";
 
 const Todo = () => {
-  const tasks = [
+  const [tasks, setTasks] = useState([
     {id: 'task-1', title: 'Купить молоко', isDone: false},
     {id: 'task-2', title: 'Погладить кота', isDone: true},
     {id: 'task-3', title: 'Еще раз погладить кота', isDone: false},
-  ]
+  ])
+
+  const [newTaskTitle, setNewTaskTitle] = useState('')
 
   const deleteAllTasks = () => {
-    console.log('Удаляем все задачи')
+    const isConfirmed = confirm('Are you sure you want to delete all?')
+
+    if (isConfirmed) {
+      setTasks([])
+    }
   }
 
-  const deleteTask = (id) => {
-    console.log(`Удаляем задачу с id ${id}`)
+  const deleteTask = (taskId) => {
+    setTasks(
+      tasks.filter(({ id }) => id !== taskId)
+    )
   }
 
   const toggleTaskComplete = (taskId, isDone) => {
-    console.log(`Задача ${taskId} ${isDone ? 'Выполнена' : 'Не выполнена'}`)
+    setTasks(
+      tasks.map((task) => {
+        if (task.id === taskId) {
+          return { ...task, isDone }
+        }
+
+        return task
+      })
+    )
   }
 
   const filterTasks = (query) => {
@@ -27,13 +44,26 @@ const Todo = () => {
   }
 
   const addTask = () => {
-    console.log('Задача выполнена')
+    if (newTaskTitle.trim().length > 0) {
+      const newTask = {
+        id: crypto?.randomUUID() ?? Date.now().toString(),
+        title: newTaskTitle,
+        isDone: false,
+      }
+
+      setTasks([...tasks, newTask])
+      setNewTaskTitle('')
+    }
   }
 
   return (
     <div className="todo">
       <h1 className="todo__title">To Do List</h1>
-      <AddTaskForm addTask={addTask} />
+      <AddTaskForm
+        addTask={addTask}
+        newTaskTitle={newTaskTitle}
+        setNewTaskTitle={setNewTaskTitle}
+      />
       <SearchTaskForm onSearchInput={filterTasks} />
       <TodoInfo
         total={tasks.length}
