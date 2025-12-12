@@ -1,3 +1,5 @@
+import classNames from "classnames";
+
 const Field = (props) => {
   const {
     className = '',
@@ -6,6 +8,7 @@ const Field = (props) => {
     type = 'text',
     onInput,
     value,
+    error,
     ref,
   } = props
 
@@ -18,7 +21,9 @@ const Field = (props) => {
         {label}
       </label>
       <input
-        className="field__input"
+        className={classNames('field__input', {
+          'is-invalid': error,
+        })}
         id={id}
         placeholder=" "
         autoComplete="off"
@@ -27,6 +32,9 @@ const Field = (props) => {
         onInput={onInput}
         ref={ref}
       />
+      {error && (
+        <span className="field__error" title={error}>{error}</span>
+      )}
     </div>
   )
 }
